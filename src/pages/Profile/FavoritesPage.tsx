@@ -3,12 +3,18 @@ import { Heart } from 'lucide-react';
 
 import { MediaCard } from '@/components/movie/MediaCard';
 import { Button } from '@/components/ui/button';
+import { SignInRequired, useRequireAuth } from '@/components/common/SignInRequired';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { ROUTES } from '@/lib/constants';
 import type { TMDBMovie, TMDBTvShow } from '@/types';
 
 export default function FavoritesPage() {
   const favorites = useUserDataStore((s) => s.favorites);
+  const { needsAuth } = useRequireAuth();
+
+  if (needsAuth) {
+    return <SignInRequired title="Your favorites are waiting" description="Sign in to favorite titles and access them from any device." />;
+  }
 
   return (
     <div className="container py-8">

@@ -4,6 +4,7 @@ import { Bookmark, Calendar, Heart, Mail, MonitorPlay, User as UserIcon } from '
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { SignInRequired, useRequireAuth } from '@/components/common/SignInRequired';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { ROUTES } from '@/lib/constants';
@@ -12,6 +13,7 @@ import { formatDate, getInitials } from '@/lib/utils';
 export default function ProfilePage() {
   const profile = useAuthStore((s) => s.user);
   const firebaseUser = useAuthStore((s) => s.firebaseUser);
+  const { needsAuth } = useRequireAuth();
   const watchlistCount = useUserDataStore((s) => s.watchlist.length);
   const favoritesCount = useUserDataStore((s) => s.favorites.length);
   const continueCount = useUserDataStore((s) => s.continueWatching.length);
@@ -23,12 +25,9 @@ export default function ProfilePage() {
   const displayPhoto = profile?.photoURL ?? firebaseUser?.photoURL ?? null;
   const displayCreatedAt = profile?.createdAt ?? Date.now();
 
-  if (!firebaseUser) {
+  if (needsAuth || !firebaseUser) {
     return (
-      <div className="container flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <h1 className="font-display text-2xl font-bold">Not signed in</h1>
-        <p className="mt-2 text-muted-foreground">Sign in to view your profile.</p>
-      </div>
+      <SignInRequired title="Your profile is waiting" description="Sign in to view your profile, watchlist, favorites, and watch history." />
     );
   }
 

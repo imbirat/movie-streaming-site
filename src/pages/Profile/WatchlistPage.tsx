@@ -3,12 +3,18 @@ import { Bookmark } from 'lucide-react';
 
 import { MediaCard } from '@/components/movie/MediaCard';
 import { Button } from '@/components/ui/button';
+import { SignInRequired, useRequireAuth } from '@/components/common/SignInRequired';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { ROUTES } from '@/lib/constants';
 import type { TMDBMovie, TMDBTvShow } from '@/types';
 
 export default function WatchlistPage() {
   const watchlist = useUserDataStore((s) => s.watchlist);
+  const { needsAuth } = useRequireAuth();
+
+  if (needsAuth) {
+    return <SignInRequired title="Your watchlist is waiting" description="Sign in to save titles and sync them across all your devices." />;
+  }
 
   return (
     <div className="container py-8">

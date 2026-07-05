@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { ContinueWatchingCard } from '@/components/movie/ContinueWatchingCard';
 import { Button } from '@/components/ui/button';
+import { SignInRequired, useRequireAuth } from '@/components/common/SignInRequired';
 import { useUserDataStore } from '@/stores/userDataStore';
 import { useWatchProgressActions } from '@/hooks/useUserData';
 import { ROUTES } from '@/lib/constants';
@@ -11,6 +12,11 @@ import { ROUTES } from '@/lib/constants';
 export default function ContinueWatchingPage() {
   const continueWatching = useUserDataStore((s) => s.continueWatching);
   const progressActions = useWatchProgressActions();
+  const { needsAuth } = useRequireAuth();
+
+  if (needsAuth) {
+    return <SignInRequired title="Continue watching where you left off" description="Sign in to sync your watch progress across all your devices." />;
+  }
 
   function handleRemove(id: string, tmdbId: number, type: 'movie' | 'tv' | 'anime') {
     void progressActions.removeByMedia(tmdbId, type);

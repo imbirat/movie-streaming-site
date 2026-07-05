@@ -46,6 +46,10 @@ export default defineConfig({
         // on the next visit, rather than waiting for all tabs to close.
         skipWaiting: true,
         clientsClaim: true,
+        // Don't navigate-fallback to index.html via the SW — let the browser
+        // handle routing natively. This prevents stale index.html from being
+        // served when the user navigates directly to a protected route.
+        navigateFallbackDenylist: [/^\/.*/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/image\.tmdb\.org\/.*/i,

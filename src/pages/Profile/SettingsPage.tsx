@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { SignInRequired, useRequireAuth } from '@/components/common/SignInRequired';
 import { useThemeStore } from '@/stores/themeStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -27,11 +28,16 @@ export default function SettingsPage() {
   const toggleTheme = useThemeStore((s) => s.toggle);
   const settings = useSettingsStore();
   const firebaseUser = useAuthStore((s) => s.firebaseUser);
+  const { needsAuth } = useRequireAuth();
 
   async function handleLogout() {
     await authService.logout();
     toast.success('Signed out.');
     navigate(ROUTES.HOME);
+  }
+
+  if (needsAuth) {
+    return <SignInRequired title="Settings are unavailable" description="Sign in to manage your account settings and preferences." />;
   }
 
   return (
