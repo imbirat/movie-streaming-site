@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MonitorPlay, Trash2 } from 'lucide-react';
+import { Loader2, MonitorPlay, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { ContinueWatchingCard } from '@/components/movie/ContinueWatchingCard';
@@ -12,7 +12,15 @@ import { ROUTES } from '@/lib/constants';
 export default function ContinueWatchingPage() {
   const continueWatching = useUserDataStore((s) => s.continueWatching);
   const progressActions = useWatchProgressActions();
-  const { needsAuth } = useRequireAuth();
+  const { needsAuth, loading } = useRequireAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
+  }
 
   if (needsAuth) {
     return <SignInRequired title="Continue watching where you left off" description="Sign in to sync your watch progress across all your devices." />;

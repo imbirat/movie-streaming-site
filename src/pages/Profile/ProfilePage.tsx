@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bookmark, Calendar, Heart, Mail, MonitorPlay, User as UserIcon } from 'lucide-react';
+import { Bookmark, Calendar, Heart, Loader2, Mail, MonitorPlay, User as UserIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,7 +13,7 @@ import { formatDate, getInitials } from '@/lib/utils';
 export default function ProfilePage() {
   const profile = useAuthStore((s) => s.user);
   const firebaseUser = useAuthStore((s) => s.firebaseUser);
-  const { needsAuth } = useRequireAuth();
+  const { needsAuth, loading } = useRequireAuth();
   const watchlistCount = useUserDataStore((s) => s.watchlist.length);
   const favoritesCount = useUserDataStore((s) => s.favorites.length);
   const continueCount = useUserDataStore((s) => s.continueWatching.length);
@@ -24,6 +24,14 @@ export default function ProfilePage() {
   const displayEmail = profile?.email ?? firebaseUser?.email ?? '—';
   const displayPhoto = profile?.photoURL ?? firebaseUser?.photoURL ?? null;
   const displayCreatedAt = profile?.createdAt ?? Date.now();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
+  }
 
   if (needsAuth || !firebaseUser) {
     return (

@@ -4,6 +4,7 @@ import { LockKeyhole } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
 import { useAuthStore } from '@/stores/authStore';
+import { authService } from '@/services/firebase/auth';
 
 interface SignInRequiredProps {
   title?: string;
@@ -47,18 +48,29 @@ export function SignInRequired({
 }
 
 /**
- * Hook that returns true if the current user is definitely not signed in.
- * Used by protected pages to show <SignInRequired /> as a defensive fallback.
+ * Hook that returns the current auth state for protected pages.
+ *
+ * - needsAuth: true when we KNOW the user is not signed in (show SignInRequired)
+ * - loading: true when auth state is still being determined (show loader)
+ *
+ * If Firebase is not configured at all, needsAuth is immediately true —
+ * no point waiting for a timeout that will never resolve.
  */
 export function useRequireAuth(): { needsAuth: boolean; loading: boolean } {
   const firebaseUser = useAuthStore((s) => s.firebaseUser);
   const isReady = useAuthStore((s) => s.isReady);
   const isLoading = useAuthStore((s) => s.isLoading);
 
-  // If auth check is done and we have no firebaseUser, show sign-in prompt
+  // Firebase not configured → immediately require auth (no loading state)
+  if (!authService.isReady()) {
+    return { needsAuth: true, loading: false };
+  }
+
+  // Auth check is done — if no firebaseUser, show sign-in prompt
   if (isReady && !isLoading && !firebaseUser) {
     return { needsAuth: true, loading: false };
   }
 
+  // Still loading
   return { needsAuth: false, loading: !isReady || isLoading };
 }

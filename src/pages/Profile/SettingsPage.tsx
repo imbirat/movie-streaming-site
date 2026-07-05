@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { LogOut, Monitor, Moon, Server, Settings as SettingsIcon, Sun } from 'lucide-react';
+import { Loader2, LogOut, Monitor, Moon, Server, Settings as SettingsIcon, Sun } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -28,12 +28,20 @@ export default function SettingsPage() {
   const toggleTheme = useThemeStore((s) => s.toggle);
   const settings = useSettingsStore();
   const firebaseUser = useAuthStore((s) => s.firebaseUser);
-  const { needsAuth } = useRequireAuth();
+  const { needsAuth, loading } = useRequireAuth();
 
   async function handleLogout() {
     await authService.logout();
     toast.success('Signed out.');
     navigate(ROUTES.HOME);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
   }
 
   if (needsAuth) {

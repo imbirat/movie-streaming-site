@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { Heart, Loader2 } from 'lucide-react';
 
 import { MediaCard } from '@/components/movie/MediaCard';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,15 @@ import type { TMDBMovie, TMDBTvShow } from '@/types';
 
 export default function FavoritesPage() {
   const favorites = useUserDataStore((s) => s.favorites);
-  const { needsAuth } = useRequireAuth();
+  const { needsAuth, loading } = useRequireAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
+  }
 
   if (needsAuth) {
     return <SignInRequired title="Your favorites are waiting" description="Sign in to favorite titles and access them from any device." />;
