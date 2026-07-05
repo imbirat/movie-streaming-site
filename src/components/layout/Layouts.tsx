@@ -4,11 +4,14 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ScrollToTop } from './ScrollToTop';
 import { CommandPalette } from './CommandPalette';
+import { PageErrorBoundary } from './PageErrorBoundary';
 import { useSEO } from '@/hooks/useSEO';
 
 /**
  * Public layout: navbar on top, content in middle, footer at bottom.
  * The footer sticks to the bottom of the viewport via `min-h-screen flex flex-col`.
+ * Pages are wrapped in a PageErrorBoundary so a runtime error in one page
+ * shows a clear error message instead of a blank screen.
  */
 export function PublicLayout() {
   useSEO();
@@ -18,7 +21,9 @@ export function PublicLayout() {
       <Navbar />
       <CommandPalette />
       <main className="flex-1 pt-16">
-        <Outlet />
+        <PageErrorBoundary>
+          <Outlet />
+        </PageErrorBoundary>
       </main>
       <Footer />
     </div>
@@ -34,7 +39,9 @@ export function BareLayout() {
     <div className="flex min-h-screen flex-col bg-background">
       <ScrollToTop />
       <main className="flex-1">
-        <Outlet />
+        <PageErrorBoundary>
+          <Outlet />
+        </PageErrorBoundary>
       </main>
     </div>
   );

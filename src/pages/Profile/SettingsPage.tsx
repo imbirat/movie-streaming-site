@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Loader2, LogOut, Monitor, Moon, Server, Settings as SettingsIcon, Sun } from 'lucide-react';
+import { LogOut, Monitor, Moon, Server, Settings as SettingsIcon, Sun } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -31,15 +30,22 @@ export default function SettingsPage() {
   const { needsAuth, loading } = useRequireAuth();
 
   async function handleLogout() {
-    await authService.logout();
-    toast.success('Signed out.');
-    navigate(ROUTES.HOME);
+    try {
+      await authService.logout();
+      toast.success('Signed out.');
+      navigate(ROUTES.HOME);
+    } catch (err) {
+      console.error('[settings] logout failed:', err);
+      toast.error('Could not sign out.');
+    }
   }
 
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand/10">
+          <SettingsIcon className="h-6 w-6 animate-spin text-brand" />
+        </div>
       </div>
     );
   }
@@ -113,9 +119,13 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-            <Switch
+            {/* Using a simple checkbox instead of Radix Switch to avoid runtime errors */}
+            <input
+              type="checkbox"
               checked={settings.reduceAnimations}
-              onCheckedChange={settings.setReduceAnimations}
+              onChange={(e) => settings.setReduceAnimations(e.target.checked)}
+              className="h-5 w-5 rounded border-border accent-brand"
+              aria-label="Reduce animations"
             />
           </div>
         </div>
@@ -167,7 +177,13 @@ export default function SettingsPage() {
                 Automatically play the next episode when one ends.
               </p>
             </div>
-            <Switch checked={settings.autoplay} onCheckedChange={settings.setAutoplay} />
+            <input
+              type="checkbox"
+              checked={settings.autoplay}
+              onChange={(e) => settings.setAutoplay(e.target.checked)}
+              className="h-5 w-5 rounded border-border accent-brand"
+              aria-label="Autoplay"
+            />
           </div>
 
           <Separator />
@@ -179,9 +195,12 @@ export default function SettingsPage() {
                 Show subtitles when available.
               </p>
             </div>
-            <Switch
+            <input
+              type="checkbox"
               checked={settings.subtitlesEnabled}
-              onCheckedChange={settings.setSubtitlesEnabled}
+              onChange={(e) => settings.setSubtitlesEnabled(e.target.checked)}
+              className="h-5 w-5 rounded border-border accent-brand"
+              aria-label="Subtitles"
             />
           </div>
         </div>
