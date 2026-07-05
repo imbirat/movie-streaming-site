@@ -6,7 +6,11 @@ import { Toaster } from 'sonner';
 
 import App from './App';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
+import { BUILD_INFO } from '@/lib/buildInfo';
 import './index.css';
+
+// Log build info to console for deployment debugging
+console.info('[Strelix] Build:', BUILD_INFO);
 
 const queryClient = new QueryClient({
   defaultOptions: {
