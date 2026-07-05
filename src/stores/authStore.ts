@@ -55,11 +55,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'strelix-auth',
-      // Don't persist isLoading / isReady
+      // Only persist user display data (for instant navbar render on reload).
+      // NEVER persist isAuthenticated / isLoading / isReady — those must be
+      // re-derived from Firebase on every page load. Persisting them causes
+      // stale "authenticated: true" state when Firebase isn't configured or
+      // the user's session has expired.
       partialize: (state) => ({
         user: state.user,
         firebaseUser: state.firebaseUser,
-        isAuthenticated: state.isAuthenticated,
       }),
     },
   ),

@@ -16,10 +16,18 @@ export default function ProfilePage() {
   const favoritesCount = useUserDataStore((s) => s.favorites.length);
   const continueCount = useUserDataStore((s) => s.continueWatching.length);
 
-  if (!profile) {
+  // If we have Firebase user but no profile doc yet, fall back to Firebase data
+  // so the page isn't blank while the Firestore doc loads.
+  const displayName = profile?.username ?? firebaseUser?.email?.split('@')[0] ?? 'User';
+  const displayEmail = profile?.email ?? firebaseUser?.email ?? '—';
+  const displayPhoto = profile?.photoURL ?? firebaseUser?.photoURL ?? null;
+  const displayCreatedAt = profile?.createdAt ?? Date.now();
+
+  if (!firebaseUser) {
     return (
-      <div className="container py-12 text-center">
-        <p className="text-muted-foreground">Loading profile...</p>
+      <div className="container flex min-h-[50vh] flex-col items-center justify-center text-center">
+        <h1 className="font-display text-2xl font-bold">Not signed in</h1>
+        <p className="mt-2 text-muted-foreground">Sign in to view your profile.</p>
       </div>
     );
   }
@@ -29,14 +37,14 @@ export default function ProfilePage() {
       {/* Header */}
       <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
         <Avatar className="h-24 w-24 border-2 border-brand">
-          <AvatarImage src={profile.photoURL ?? firebaseUser?.photoURL ?? undefined} alt={profile.username} />
-          <AvatarFallback className="text-2xl">{getInitials(profile.username)}</AvatarFallback>
+          <AvatarImage src={displayPhoto ?? undefined} alt={displayName} />
+          <AvatarFallback className="text-2xl">{getInitials(displayName)}</AvatarFallback>
         </Avatar>
 
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="font-display text-3xl font-extrabold tracking-tight">
-              {profile.username}
+              {displayName}
             </h1>
             {firebaseUser?.emailVerified ? (
               <Badge variant="outline" className="gap-1 text-emerald-500">
@@ -47,10 +55,10 @@ export default function ProfilePage() {
             )}
           </div>
           <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-            <Mail className="h-4 w-4" /> {profile.email || firebaseUser?.email}
+            <Mail className="h-4 w-4" /> {displayEmail}
           </p>
           <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" /> Joined {formatDate(new Date(profile.createdAt).toISOString())}
+            <Calendar className="h-4 w-4" /> Joined {formatDate(new Date(displayCreatedAt).toISOString())}
           </p>
         </div>
 
@@ -85,17 +93,17 @@ export default function ProfilePage() {
       <div className="mt-8 rounded-lg border border-border bg-card/40 p-6">
         <h2 className="font-display text-lg font-semibold">Profile details</h2>
         <dl className="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-          <Detail icon={<UserIcon className="h-4 w-4" />} label="Username" value={profile.username} />
-          <Detail icon={<Mail className="h-4 w-4" />} label="Email" value={profile.email || firebaseUser?.email || '—'} />
+          <Detail icon={<UserIcon className="h-4 w-4" />} label="Username" value={displayName} />
+          <Detail icon={<Mail className="h-4 w-4" />} label="Email" value={displayEmail} />
           <Detail
             icon={<Calendar className="h-4 w-4" />}
             label="Member since"
-            value={formatDate(new Date(profile.createdAt).toISOString())}
+            value={formatDate(new Date(displayCreatedAt).toISOString())}
           />
           <Detail
             icon={<UserIcon className="h-4 w-4" />}
             label="User ID"
-            value={profile.uid.slice(0, 12) + '...'}
+            value={firebaseUser.uid.slice(0, 12) + '...'}
           />
         </dl>
       </div>
