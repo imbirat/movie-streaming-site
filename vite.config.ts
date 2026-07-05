@@ -39,7 +39,13 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Only precache static assets — NOT JS/CSS chunks, which change hash
+        // on every deploy and would otherwise be served stale from the SW cache.
+        globPatterns: ['**/*.{ico,png,svg,woff2,html}'],
+        // Skip waiting + clients claim so the new SW activates immediately
+        // on the next visit, rather than waiting for all tabs to close.
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/image\.tmdb\.org\/.*/i,
