@@ -1,0 +1,64 @@
+// Strelix Stream — Firestore Security Rules
+// Each user can only read/write their own documents.
+// Deploy with: firebase deploy --only firestore:rules
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============== USERS ==============
+    // A user document is readable by anyone (so usernames can be shown publicly),
+    // but only the owner can write.
+    match /users/{uid} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update, delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ============== WATCHLISTS ==============
+    match /watchlists/{docId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasAll(['uid', 'tmdbId', 'type', 'title', 'addedAt']);
+      allow update, delete: if request.auth != null
+                            && resource.data.uid == request.auth.uid;
+    }
+
+    // ============== FAVORITES ==============
+    match /favorites/{docId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasAll(['uid', 'tmdbId', 'type', 'addedAt']);
+      allow update, delete: if request.auth != null
+                            && resource.data.uid == request.auth.uid;
+    }
+
+    // ============== WATCH PROGRESS ==============
+    match /watchProgress/{docId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasAll(['uid', 'tmdbId', 'type', 'currentTime', 'duration', 'updatedAt']);
+      allow update, delete: if request.auth != null
+                            && resource.data.uid == request.auth.uid;
+    }
+
+    // ============== USER SETTINGS ==============
+    match /userSettings/{uid} {
+      allow read: if request.auth != null && uid == request.auth.uid;
+      allow create, update, delete: if request.auth != null && uid == request.auth.uid;
+    }
+
+    // ============== RATE LIMITING (helper) ==============
+    // Firestore doesn't have built-in rate limiting; use Firebase App Check
+    // + Cloud Functions for write quotas in production.
+
+    // ============== DEFAULT ==============
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

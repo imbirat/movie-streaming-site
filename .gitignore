@@ -1,2 +1,10 @@
-skills/
 node_modules/
+dist/
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vite/
+.turbo/
+coverage/
+db/
