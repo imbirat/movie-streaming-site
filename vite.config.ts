@@ -64,6 +64,8 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
+    // Allow the cloud sandbox preview hostnames (Vite blocks unknown hosts by default).
+    allowedHosts: true,
     fs: {
       // Allow serving files from project root, but ignore the skills folder.
       strict: false,
@@ -76,5 +78,6 @@ export default defineConfig({
   preview: {
     port: 3000,
     host: '0.0.0.0',
+    allowedHosts: true,
   },
 });
