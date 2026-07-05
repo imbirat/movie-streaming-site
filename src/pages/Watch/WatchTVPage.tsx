@@ -17,12 +17,14 @@ export default function WatchTVPage({ category = 'tv' }: WatchTVPageProps) {
 
   const detailQuery = useDetail('tv', id);
 
+  // Same pattern as WatchMoviePage: don't block the embed on TMDB metadata.
   if (detailQuery.isLoading) {
     return <PageLoader fullScreen label="Loading episode..." />;
   }
 
   const detail = detailQuery.data;
-  const title = detail && 'name' in detail ? detail.name : 'TV Show';
+  const title =
+    detail && 'name' in detail && detail.name ? detail.name : 'TV Show';
 
   return (
     <VideoPlayer

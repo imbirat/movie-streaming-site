@@ -63,11 +63,10 @@ export default function App() {
 
         {/* Bare layout for watch + auth */}
         <Route element={<BareLayout />}>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/watch/movie/:id" element={<WatchMoviePage />} />
-            <Route path="/watch/tv/:id/:season/:episode" element={<WatchTVPage />} />
-            <Route path="/watch/anime/:id/:season/:episode" element={<WatchTVPage />} />
-          </Route>
+          {/* Watch routes are PUBLIC — continue-watching tracking silently no-ops when not signed in */}
+          <Route path="/watch/movie/:id" element={<WatchMoviePage />} />
+          <Route path="/watch/tv/:id/:season/:episode" element={<WatchTVPage />} />
+          <Route path="/watch/anime/:id/:season/:episode" element={<WatchTVPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />

@@ -285,6 +285,13 @@ export function VideoPlayer({
             />
           </AnimatePresence>
         </div>
+
+        {/* Loading / fallback hint shown beneath the iframe container.
+            Free streaming embeds can take 5-10s to load or be blocked by
+            the upstream provider — surface a clear hint instead of pure black. */}
+        <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/70 px-4 py-1.5 text-center text-xs text-white/70 backdrop-blur-sm">
+          If the video doesn't load, switch servers in the top-right.
+        </div>
       </div>
 
       {/* Bottom controls (TV only) */}
